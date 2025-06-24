@@ -3,35 +3,44 @@ import pickle
 import streamlit as st
 
 # Load the trained model
-model = pickle.load(open("weather(logistic) (1).sva", 'rb'))
+model = pickle.load(open("C:/Users/Vraj/OneDrive/Desktop/internship/weather app/weather(logistic) (1).sva", 'rb'))
 
-# Streamlit setup
 st.set_page_config(page_title="Weather Predictor")
 st.title("Weather Prediction App")
-st.markdown("### Enter weather details below to predict the weather type:")
+st.markdown("Enter the weather details below:")
 
-# Input Fields (no icons/emojis)
-temperature = st.number_input("Temperature (°C)", -50.0, 60.0)
-humidity = st.number_input("Humidity (%)", 0.0, 100.0)
-wind_speed = st.number_input("Wind Speed (km/h)", 0.0, 150.0)
-pressure = st.number_input("Pressure (hPa)", 800.0, 1100.0)
-visibility = st.number_input("Visibility (km)", 0.0, 50.0)
-dew_point = st.number_input("Dew Point (°C)", -20.0, 30.0)
-cloud_cover = st.number_input("Cloud Cover (%)", 0.0, 100.0)
-uv_index = st.number_input("UV Index", 0.0, 15.0)
-precipitation = st.number_input("Precipitation (mm)", 0.0, 500.0)
-solar_radiation = st.number_input("Solar Radiation (W/m²)", 0.0, 1500.0)
+# Define a function to safely convert text input to float
+def safe_float_input(label):
+    value = st.text_input(label)
+    try:
+        return float(value)
+    except:
+        return None
 
-# Prediction
+# Get 10 inputs from user without steppers
+temperature = safe_float_input("Temperature (°C)")
+humidity = safe_float_input("Humidity (%)")
+wind_speed = safe_float_input("Wind Speed (km/h)")
+pressure = safe_float_input("Pressure (hPa)")
+visibility = safe_float_input("Visibility (km)")
+dew_point = safe_float_input("Dew Point (°C)")
+cloud_cover = safe_float_input("Cloud Cover (%)")
+uv_index = safe_float_input("UV Index")
+precipitation = safe_float_input("Precipitation (mm)")
+solar_radiation = safe_float_input("Solar Radiation (W/m²)")
+
+# Predict only if all inputs are valid
 if st.button("Predict Weather"):
-    input_data = np.array([[temperature, humidity, wind_speed, pressure,
-                            visibility, dew_point, cloud_cover, uv_index,
-                            precipitation, solar_radiation]])
+    inputs = [temperature, humidity, wind_speed, pressure,
+              visibility, dew_point, cloud_cover, uv_index,
+              precipitation, solar_radiation]
 
-    prediction = model.predict(input_data)[0]
-
-    label_map = {0: "Sunny", 1: "Rainy", 2: "Cloudy"}
-    result = label_map.get(prediction, str(prediction))
-
-    st.subheader("Predicted Weather:")
-    st.success(f"{result}")
+    if None in inputs:
+        st.error("Please enter valid numeric values in all fields.")
+    else:
+        input_array = np.array([inputs])
+        prediction = model.predict(input_array)[0]
+        label_map = {0: "Sunny", 1: "Rainy", 2: "Cloudy"}
+        result = label_map.get(prediction, str(prediction))
+        st.subheader("Predicted Weather:")
+        st.success(result)
