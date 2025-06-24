@@ -3,7 +3,7 @@ import pickle
 import streamlit as st
 
 # Load the trained model
-model = pickle.load(open("C:/Users/Vraj/OneDrive/Desktop/internship/weather app/weather(logistic) (1).sva", 'rb'))
+model = pickle.load(open("weather(logistic) (1).sva", 'rb'))
 
 st.set_page_config(page_title="Weather Predictor")
 st.title("Weather Prediction App")
